@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="100%"
+		  height="100%"
+		   creationComplete="group1_creationCompleteHandler(event)"
+		   >
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.GridEvent;
+			
+			[Bindable]
+			private var _data:ArrayCollection;
+			
+			private var _infoDetail:InfoDetail=new InfoDetail();
+			
+			
+			
+			protected function mydata_gridDoubleClickHandler(event:GridEvent):void
+			{
+				// TODO Auto-generated method stub
+				this._infoDetail.initData(event.item);
+				Global.showPopUp(this._infoDetail,this);
+				
+			}
+			
+			protected function dataService_resultHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				this._data=new ArrayCollection();
+				var xml:XML=new XML(event.target.data);
+				for each(var _xx:XML in xml.vend){
+					var vend:String=_xx["code"];
+					var desc:String=_xx["desc"];
+					for each(var node:XML in _xx.parts.part){
+						var obj:Object=new Object();
+						obj.vend=vend;
+						obj.desc=desc;
+						obj.PartNo = node["PartNo"];
+						obj.PartDesc = node["PartDesc"];
+						obj.VendPartNo = node["VendPartNo"];
+						obj.VendPartDesc = node["VendPartDesc"];
+						obj.PackQTY = node["PackQTY"];
+						obj.OrderNO = node["OrderNO"];
+						obj.LocationNO = node["LocationNO"];
+						obj.DrawSize = node["DrawSize"];
+						obj.Version = node["Version"];
+						this._data.addItem(obj);
+					}
+					
+				}
+			}
+			
+			public function loaddata():void{
+				var ld:URLLoader=new URLLoader();
+				ld.addEventListener(Event.COMPLETE,dataService_resultHandler);
+				var url:String="php/server.php?t="+Math.random()+"&table={0}&action={1}&userid={2}&pwd={3}";
+				url=url.replace("{0}","supply");
+				url=url.replace("{1}","query");
+				url=url.replace("{2}",Global.userid);
+				url=url.replace("{3}",Global.username);
+				ld.load(new URLRequest(url));
+			}
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		
+		
+		
+	</fx:Declarations>
+	
+	<s:DataGrid id="mydata" dataProvider="{this._data}" width="100%" height="100%" doubleClickEnabled="true" gridDoubleClick="mydata_gridDoubleClickHandler(event)">
+		<s:columns>	
+			<s:ArrayList>
+				<s:GridColumn dataField="PartNo" headerText="零件号" />
+				<s:GridColumn dataField="PartDesc" headerText="零件描述" />
+				<s:GridColumn dataField="vend" headerText="供应商" />
+				<s:GridColumn dataField="desc" headerText="供应商描述" />
+				<s:GridColumn dataField="PackQTY" headerText="包装量" />
+				<s:GridColumn dataField="OrderNO" headerText="订单" />
+				<s:GridColumn dataField="Version" headerText="版本" />
+				<s:GridColumn dataField="DrawSize" headerText="追溯标志" />
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>
+</s:Group>

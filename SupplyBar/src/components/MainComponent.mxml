@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:components="components.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.ListEvent;
+			import mx.messaging.AbstractConsumer;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.components.Image;
+			
+			private var f1:ContentComponent;
+			private var f2:PasswordModify;
+			private var f3:UserManager;
+			private var f5:ConfigModify;
+			
+			[Bindable]
+			private var menuData:Array;
+			
+			public function loaddata():void{
+				flash.system.Security.allowDomain("*");
+				menuData=new Array();
+				/*
+				 * 
+				<node label="零件查看打印" value="0" />
+				<node label="密码修改" value="1" />
+				<node label="用户管理" value="2" />
+				<node label="退出系统" value="-1" />
+				*/
+				var obj1:Object=new Object();
+				obj1.label="零件条码打印";
+				obj1.value="1";
+				menuData.push(obj1);
+				
+				var obj2:Object=new Object();
+				obj2.label="密码修改";
+				obj2.value="2";
+				menuData.push(obj2);
+			
+				if(Global.userrole==1){
+				 	var obj3:Object=new Object();
+				 	obj3.label="用户管理";
+				 	obj3.value="3";
+				 	menuData.push(obj3);
+				}
+				 
+				var obj5:Object=new Object();
+				obj5.label="用户参数";
+				obj5.value="5";
+				menuData.push(obj5);
+				
+				
+				 var obj4:Object=new Object();
+				 obj4.label="退出系统";
+				 obj4.value="-1";
+				 menuData.push(obj4);
+				 
+				 this.panCon.title="欢迎使用条码系统";
+				 this.back.visible=true;
+			}
+			
+			protected function menuList_changeHandler(event:ListEvent):void
+			{
+				panCon.title = this.menuList.selectedItem.label;
+				if(this.panCon.numElements==2)panCon.removeElementAt(1);
+				this.back.visible=false;
+				switch(this.menuList.selectedItem.value.toString()){
+					case "1":
+						if(!f1)f1=new ContentComponent();
+						f1.loaddata();
+						panCon.addElement(f1);
+						break;
+					case "2":
+						if(!f2)f2=new PasswordModify();
+						panCon.addElement(f2);
+						break;
+					case "3":
+						if(!f3)f3=new UserManager();
+						f3.loaddata();
+						panCon.addElement(f3);
+						break;
+					case "5":
+						if(!f5)f5=new ConfigModify();
+						panCon.addElement(f5);
+						break;
+					case "-1":
+						dispatchEvent(new Event("logout"));
+						break;
+					default:
+						Alert.show("非法操作！");
+						break;
+				}
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Metadata>
+		[Event(name="logout", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		
+		
+		
+	</fx:Declarations>
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+	<s:Group width="100%" height="50" id="topFrame" horizontalCenter="0">
+		<s:Image source="images/bg.jpg" />
+		<s:Label width="100%" fontFamily="SimSun" text="   供 应 商 网 络 条 码 系 统" fontSize="25" height="100%" verticalAlign="middle" paddingLeft="20" />
+		<!--<s:Label text="wwww" x="{this.topFrame.width-20}" width="20" />-->
+	</s:Group>
+	
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:HorizontalLayout />
+		</s:layout>
+		
+		<s:Panel title="菜单栏" width="150" height="100%">
+			<mx:Tree id="menuList" width="100%" borderVisible="false" dataProvider="{menuData}" labelField="label" showRoot="false"
+					  change="menuList_changeHandler(event)">
+			</mx:Tree>
+		</s:Panel>
+		
+		<s:Panel id="panCon" title="内容栏" width="100%" height="100%">
+			<s:Image id="back" source="images/wel_2.jpg" width="100%" height="100%" />
+		</s:Panel>
+		
+	</s:Group>
+	
+</s:Group>

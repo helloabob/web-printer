@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 width="100%"
+		 height="100%" creationComplete="group1_creationCompleteHandler(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.collections.XMLListCollection;
+			import mx.events.FlexEvent;
+			
+			import spark.events.GridEvent;
+			
+			private var _ud:UserDetail=new UserDetail();
+			
+			[Bindable]
+			private var _data:XMLListCollection;
+			
+			public function loaddata():void{
+				var ld:URLLoader=new URLLoader();
+				ld.addEventListener(Event.COMPLETE,onLoginResult);
+				var url:String="php/server.php?t="+Math.random()+"&table={0}&action={1}&userid={2}&pwd={3}";
+				url=url.replace("{0}","user");
+				url=url.replace("{1}","query");
+				url=url.replace("{2}",Global.userid);
+				url=url.replace("{3}",Global.username);
+				ld.load(new URLRequest(url));
+			}
+			private function onLoginResult(evt:Event):void{
+				_data=new XMLListCollection(new XMLList(new XML(evt.target.data).user));
+			}
+			
+			protected function mydata_gridDoubleClickHandler(event:GridEvent):void
+			{
+				// TODO Auto-generated method stub
+				Global.showPopUp(this._ud,this);
+				
+				this._ud.initData(event.item,this.mydata.selectedIndex);
+				//Global.showPopUp(this._infoDetail,this);
+				
+			}
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				this._ud.addEventListener("myclose",onrefresh);
+			}
+			private function onrefresh(evt:Event):void{
+				this.loaddata();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:DataGrid id="mydata" dataProvider="{this._data}" width="100%" height="100%" doubleClickEnabled="true" gridDoubleClick="mydata_gridDoubleClickHandler(event)">
+		<s:columns>	
+			<s:ArrayList>
+				<s:GridColumn dataField="id" headerText="账户" />
+				<s:GridColumn dataField="desc" headerText="用户名" />
+				<s:GridColumn dataField="role" headerText="角色" />
+				<s:GridColumn dataField="supply" headerText="供应商" />
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>
+	
+</s:Group>

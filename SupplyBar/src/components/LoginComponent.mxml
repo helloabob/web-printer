@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Metadata>
+		[Event(name="login", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import flash.net.navigateToURL;
+			
+			import mx.controls.Alert;
+			import mx.controls.Label;
+			import mx.events.FlexEvent;
+			
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+				
+				
+			
+				var usernameValue:String = txtuser.text;
+				var passwordValue:String = txtpwd.text;
+				
+				var ld:URLLoader;
+				
+				if(usernameValue == "" || passwordValue == "") 
+				{
+					Alert.show("用户名或密码不能为空", "提示");
+				}
+				else 
+				{
+					Global.showloading(this);
+					Global.userid=usernameValue;
+					Global.username=passwordValue;
+					ld=new URLLoader();
+					ld.addEventListener(Event.COMPLETE,onLoginResult);
+					var url:String="php/server.php?t="+Math.random()+"&table={0}&action={1}&userid={2}&pwd={3}";
+					url=url.replace("{0}","user");
+					url=url.replace("{1}","login");
+					url=url.replace("{2}",usernameValue);
+					url=url.replace("{3}",passwordValue);
+					ld.load(new URLRequest(url));
+				}
+				
+			}
+			
+			private function onLoginResult(evt:Event):void{
+				Global.hideloading();
+				if(evt.target.data!=""&&evt.target.data!="error"){
+					//Alert.show("登录成功", "提示");
+					var xml:XML=new XML(evt.target.data);
+					Global.userrole=int(xml.role);
+					Global.barx=int(xml.barx);
+					Global.bary=int(xml.bary);
+					Global.barw=int(xml.barw);
+					Global.barh=int(xml.barh);
+					dispatchEvent(new Event("login"));
+				}else{
+					Alert.show("用户名或密码不正确，请重新输入", "提示");
+				}
+			}
+			
+			protected function onexit(evt:MouseEvent):void{
+				
+				navigateToURL(new URLRequest('javascript:window.opener=null;window.close()'),'_self');
+				
+			}
+			
+			private function onenter(evt:FlexEvent):void{
+				this.button1_clickHandler(null);
+			}
+		]]>
+	</fx:Script>
+	
+	
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+		<!--<s:Image width="100%" source="images/back.jpg" />-->
+
+	
+	<s:Panel title="登录" width="350" height="200" verticalCenter="0" horizontalCenter="0">
+		<s:Form width="100%" height="108">
+			<s:FormItem label="帐号：">
+				<s:TextInput width="237" id="txtuser" />
+			</s:FormItem>
+			<s:FormItem label="密码：">
+				<s:TextInput width="237" displayAsPassword="true" id="txtpwd" enter="onenter(event)" />
+			</s:FormItem>
+			
+			
+		</s:Form>
+		<s:Button x="126" y="125" label="提交" click="button1_clickHandler(event)" />
+		<!--<s:Button x="209" y="126" label="" click="onexit(event)" />-->
+	</s:Panel>
+</s:Group>

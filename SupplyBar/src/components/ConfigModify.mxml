@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" creationComplete="comp(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+				if(txtx.text==""||txty.text==""||txtw.text==""||txth.text==""){
+					Alert.show("请正确填写！");
+				}else{
+					var ld:URLLoader=new URLLoader();
+					ld.addEventListener(Event.COMPLETE,onLoginResult);
+					var url:String="php/server.php?t="+Math.random()+"&table={0}&action={1}&userid={2}&pwd={3}&x={4}&y={5}&w={6}&h={7}";
+					url=url.replace("{0}","user");
+					url=url.replace("{1}","config");
+					url=url.replace("{2}",Global.userid);
+					url=url.replace("{3}",Global.username);
+					url=url.replace("{4}",txtx.text);
+					url=url.replace("{5}",txty.text);
+					url=url.replace("{6}",txtw.text);
+					url=url.replace("{7}",txth.text);
+					ld.load(new URLRequest(url));
+				}
+			}
+			private function onLoginResult(evt:Event):void{
+				if(evt.target.data=="ok"){
+					Alert.show("操作成功！");
+					Global.barx=int(txtx.text);
+					Global.bary=int(txty.text);
+					Global.barw=int(txtw.text);
+					Global.barh=int(txth.text);
+				}
+			}
+			
+			
+			protected function comp(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				this.txtx.text=Global.barx.toString();
+				this.txty.text=Global.bary.toString();
+				this.txtw.text=Global.barw.toString();
+				this.txth.text=Global.barh.toString();
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	
+	<s:Form>
+		<s:FormItem label="左边距：">
+			<s:TextInput id="txtx" />
+		</s:FormItem>
+		<s:FormItem label="右边距：">
+			<s:TextInput id="txty" />
+		</s:FormItem>
+		<s:FormItem label="条码宽度：">
+			<s:TextInput id="txtw" />
+		</s:FormItem>
+		<s:FormItem label="条码高度：">
+			<s:TextInput id="txth" />
+		</s:FormItem>
+	</s:Form>
+	<s:Button x="95" y="221" label="确定"  click="button1_clickHandler(event)"/>
+	
+</s:Group>

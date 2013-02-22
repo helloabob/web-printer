@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="100" minHeight="100"
+			   xmlns:components="components.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			protected function logincomponent1_loginHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				Global.hideloading();
+				loginFrame.visible=false;
+				mainFrame.visible=true;
+				mainFrame.loaddata();
+				//Alert.show(Global.username);
+			}
+			
+			protected function mainFrame_logoutHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				loginFrame.visible=true;
+				mainFrame.visible=false;
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<components:LoginComponent id="loginFrame" width="100%" height="100%" login="logincomponent1_loginHandler(event)" />
+	<components:MainComponent id="mainFrame" width="100%" height="100%" visible="false" logout="mainFrame_logoutHandler(event)" />
+	
+</s:Application>

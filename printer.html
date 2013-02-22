@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title>kankanplayer</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	</head>
+	<body style="background-color:grey;">
+		<div id="flashContent">
+			<object width="400" height="330" name="player1" id="player1" type="application/x-shockwave-flash" data="printer.swf">
+                <param value="printer.swf" name="movie">
+                <param value="true" name="allowfullscreen">
+                <param value="always" name="allowscriptaccess">
+                <param value="opaque" name="wmode">
+            </object>
+		</div>
+        <script>
+        function show(src){
+			document.getElementById("aa").innerHTML+=src;
+		}
+		function lightOn(){
+			alert('light_on');
+		}
+		function onPlayComplete(){
+			alert('cc');
+		}
+        </script>
+        <div id="aa" style="float:right;">
+        
+        </div>
+        <!--div>
+        <embed width="480" height="400" classid="clsid:d27cdb6e-ae6d-11cf-96b8-4445535400000" wmode="opaque" quality="high" menu="false" play="true" loop="true" allowfullscreen="true" allowscriptaccess="always" type="application/x-shockwave-flash" src="http://video6.smgbb.cn/experience/bootstrap.swf?publisherId=88000&playerId=76071766572662785&apiDomain=api.video.smgbb.cn&xmlid=vxml/2012-05-29/1184774" />      
+        </div>
+        -->
+	</body>
+</html>

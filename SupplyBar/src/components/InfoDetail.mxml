@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.serialization.json.JSON;
+			import com.adobe.serialization.json.JSONEncoder;
+			
+			import flash.net.navigateToURL;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			private var order:String="";
+			[Bindable]
+			private var lot:String="";
+			[Bindable]
+			private var pack:String="";
+			[Bindable]
+			private var vendlot:String="";
+			[Bindable]
+			private var version:String="";
+			
+			
+			private var _obj:Object;
+			public function initData(obj:Object):void{
+				this._obj=obj;
+				this.order=obj.OrderNO;
+				this.version=obj.Version;
+				this.pack=obj.PackQTY;
+				var dt:Date=new Date();
+				this.lot=obj.vend+getDateString(dt);
+				this.vendlot=getDateString(dt)+"01";
+				//this.cbx.selected=false;
+			}
+			
+			private function getDateString(date:Date):String
+			{
+				var dYear:String = String(date.fullYear).substr(2);
+				var dMouth:String = String((date.getMonth() + 1 < 10) ? "0" : "") + (date.getMonth() + 1);
+				var dDate:String = String((date.date < 10) ? "0" : "") + date.date;
+				var ret:String = "";
+				ret += dYear + dMouth + dDate;
+				//ret += DAYS[date.getDay()] + "";
+				//ret += ((date.getHours() < 10) ? "0" : "") + date.getHours();
+				//ret += ((date.getMinutes() < 10) ? "0" : "") + date.getMinutes();
+				// 想要获取秒的话，date.getSeconds() ，语句同小时、分
+				return ret;
+			}
+			
+			protected function titlewindow1_closeHandler(event:CloseEvent):void
+			{
+				// TODO Auto-generated method stub
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function onExit(evt:Event):void{
+				//flash.external.ExternalInterface.call("alert",order);
+				PopUpManager.removePopUp(this);
+			}
+			 private function printBar():void{
+				var arr:Array=new Array();
+				var dt:Date=new Date();
+				
+				if(this.txtQty.text==this.txtPack.text||this.txtPack.text=="0"||int(this.txtQty.text)<int(this.txtPack.text)){
+					var obj:Object=new Object();
+					obj.dt=dt;
+					obj.vend=this._obj.vend;
+					obj.order=this.txtOrder.text;
+					obj.venddesc=this._obj.desc;
+					obj.part=this._obj.PartNo;
+					obj.partdesc=this._obj.PartDesc;
+					obj.lot=this.txtLot.text;
+					obj.qty=this.txtQty.text;
+					obj.vendlot=this.txtVendLot.text;
+					obj.ver=this.txtVersion.text;
+					obj.loc=this._obj.LocationNO;
+					obj.drawsize=this._obj.DrawSize.toString();
+					obj.barx=Global.barx;
+					obj.bary=Global.bary;
+					obj.barw=Global.barw;
+					obj.barh=Global.barh;
+					obj.single="true";
+					obj.pre="001";
+					var pp1:MyPrint=new MyPrint();
+					pp1.gender(obj);
+					var pp2:MyPrint=new MyPrint();
+					pp2.gender(obj);
+					arr.push(pp1);
+					arr.push(pp2);
+				}else{
+					
+					var cc:int=0;
+					if(int(this.txtQty.text)%int(this.txtPack.text)==0)cc=int(this.txtQty.text)/int(this.txtPack.text);
+					else cc=int(int(this.txtQty.text)/int(this.txtPack.text))+1;
+					for(var i:int=0;i<cc;i++){
+						
+						var obj:Object=new Object();
+						obj.total=this.txtQty.text;
+						obj.pack=this.txtPack.text;
+						obj.single="false";
+						obj.dt=dt;
+						obj.vend=this._obj.vend;
+						obj.order=this.txtOrder.text;
+						obj.venddesc=this._obj.desc;
+						obj.part=this._obj.PartNo;
+						obj.partdesc=this._obj.PartDesc;
+						obj.lot=this.txtLot.text;
+						obj.vendlot=this.txtVendLot.text;
+						obj.ver=this.txtVersion.text;
+						obj.loc=this._obj.LocationNO;
+						obj.drawsize=this._obj.DrawSize.toString();
+						obj.barx=Global.barx;
+						obj.bary=Global.bary;
+						obj.barw=Global.barw;
+						obj.barh=Global.barh;
+						if(i<cc-1)obj.qty=obj.pack;
+						else obj.qty=int(obj.total)%int(obj.pack);
+						if(obj.qty==0)obj.qty=int(obj.pack);
+						if(i<9)obj.pre="00"+(i+1).toString();
+						else if(i<99)obj.pre="0"+(i+1).toString();
+						else obj.pre=(i+1).toString();
+						var pp:MyPrint=new MyPrint();
+						pp.gender(obj);
+						arr.push(pp);
+					}
+					
+					var obj:Object=new Object();
+					obj.total=this.txtQty.text;
+					obj.pack=this.txtPack.text;
+					obj.single="false";
+					obj.dt=dt;
+					obj.vend=this._obj.vend;
+					obj.order=this.txtOrder.text;
+					obj.venddesc=this._obj.desc;
+					obj.part=this._obj.PartNo;
+					obj.partdesc=this._obj.PartDesc;
+					obj.lot=this.txtLot.text;
+					obj.vendlot=this.txtVendLot.text;
+					obj.ver=this.txtVersion.text;
+					obj.loc=this._obj.LocationNO;
+					obj.drawsize=this._obj.DrawSize.toString();
+					obj.barx=Global.barx;
+					obj.bary=Global.bary;
+					obj.barw=Global.barw;
+					obj.barh=Global.barh;
+					obj.qty=obj.total;
+					obj.pre="000";
+					var pp3:MyPrint=new MyPrint();
+					pp3.gender(obj);
+					arr.push(pp3);
+					
+				}
+				
+				var pj:PrintJob=new PrintJob();
+				if(pj.start()){
+					
+					for(var k:int=0;k<arr.length;k++){
+						//arr[k].width=Global.barw;
+						//arr[k].height=Global.barh;
+						pj.addPage(arr[k]);
+					}
+					
+					pj.send();
+				}else{
+					flash.external.ExternalInterface.call("alert","not prepare");
+				}
+			} 
+			private function onPrint(event:MouseEvent):void{
+				if(this.txtQty.text=="0"){
+					return;
+				}
+				if(this.cbx.selected==false&&int(this.txtPack.text)>0&&(int(this.txtQty.text)/int(this.txtPack.text))>1000){
+					Alert.show("张数不能超过1000！");
+					return;
+				}
+				 if(this.btn.label=="打印"&&this.cbx.selected==false){
+					this.printBar();
+				}else{
+					this.downBar();
+				} 
+			}
+			
+			 private function downBar():void{
+				var arr:Array=new Array();
+				
+				for(var i:int=0;i<int(this.txtQty.text);i++){
+					var dt:Date=new Date();
+					var bar:String=getDateString(dt)+dt.time.toString().substr(4);
+					
+					if(i<9)bar+="00"+(i+1).toString();
+					else if(i<99) bar+="0"+(i+1).toString();
+					else if(i<999) bar+=(i+1).toString();
+					else bar+=(i+1).toString().substr((i+1).toString().length-3);
+					
+					//else bar+=(i+1).toString();
+					
+					var ver:String="";
+					if(this.txtVersion.text&&this.txtVersion.text!=""){
+						ver="|"+this.txtVersion.text;
+					}
+					var str:String;
+					var qq:int=1;
+					var re:String="A";
+					if(this.txtVersion.text&&this.txtVersion.text!=""){
+						re=this.txtVersion.text;
+					}
+					//老版本
+					//str=bar+"@&*"+this._obj.PartNo+"@&*"+qq.toString()+"@&*"+this.txtLot.text+ver+"@&*"+re+"@&*"+this.txtOrder.text+"@&*"+this._obj.vend+"@&*"+this.txtVendLot.text;
+					//新版本
+					str=bar+"@&"+this._obj.PartNo+"@&"+this.txtQty.text+"@&"+re+"@&"+this.txtOrder.text+"@&"+this.txtVendLot.text;
+					arr.push(str);
+					//flash.external.ExternalInterface.call("alert",str);
+					//var file:FileReference
+				}
+				//Alert.show(arr.length.toString());
+				if(arr.length>0){
+					var url:String="php/server.php?t="+Math.random();
+					var uv:URLVariables=new URLVariables();
+					uv.table="supply";
+					uv.action="download";
+					uv.userid=Global.userid;
+					uv.pwd=Global.username;
+					uv.data=com.adobe.serialization.json.JSON.encode(arr);
+					var ur:URLRequest=new URLRequest(url);
+					ur.method=URLRequestMethod.POST;
+					ur.data=uv;
+					//ld.load(new URLRequest(url)); 
+					flash.net.navigateToURL(ur);
+				}
+			} 
+			
+			protected function cbx_changeHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				if(this.cbx.selected==true&&this._obj.DrawSize.toString().toLowerCase()=="z"){
+					this.btn.label="下载";
+				}else{
+					this.btn.label="打印";
+				}
+			}
+			
+			protected function titlewindow1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				main.isPopUp=true;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<s:TitleWindow id="main" title="详细数据-" creationComplete="titlewindow1_creationCompleteHandler(event)" close="titlewindow1_closeHandler(event)">
+		<mx:VBox>
+		<s:Form width="100%" height="100%">
+			<s:FormItem label="订单号">
+				<s:TextInput id="txtOrder" text="{this.order}"/>
+			</s:FormItem>
+			<s:FormItem label="批/序号">
+				<s:TextInput id="txtLot" text="{this.lot}"/>
+			</s:FormItem>
+			<s:FormItem label="包装量">
+				<s:TextInput id="txtPack" text="{this.pack}"/>
+			</s:FormItem>
+			<s:FormItem label="送货数量">
+				<s:TextInput id="txtQty"/>
+			</s:FormItem>
+			<s:FormItem label="供应商批次">
+				<s:TextInput id="txtVendLot" text="{this.vendlot}"/>
+			</s:FormItem>
+			
+			<s:FormItem label="版本">
+				<s:TextInput id="txtVersion" text="{this.version}"/>
+			</s:FormItem>
+			<s:FormItem label="工件码输出">
+				<s:CheckBox id="cbx" change="cbx_changeHandler(event)"/>
+			</s:FormItem>
+		</s:Form>
+			<s:Group height="30">
+				<s:Button id="btn" label="打印" x="20" click="onPrint(event)" />
+				<s:Button label="关闭" x="150" click="onExit(event)" />
+			</s:Group>
+				
+		</mx:VBox>
+	</s:TitleWindow>
+	
+</s:Group>
