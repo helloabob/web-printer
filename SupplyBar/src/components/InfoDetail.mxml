@@ -33,7 +33,9 @@
 				this.version=obj.Version;
 				this.pack=obj.PackQTY;
 				var dt:Date=new Date();
-				this.lot=obj.vend+getDateString(dt);
+				/*change format for lot. updated by bob at 20140422*/
+//				this.lot=obj.vend+getDateString(dt);
+				this.lot=getDateString(dt)+obj.vend;
 				this.vendlot=getDateString(dt)+"01";
 				//this.cbx.selected=false;
 			}
